@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BI para Sostenibilidad Ambiental — Índice del Curso</title>
+  <link rel="stylesheet" href="bi-styles.css">
+  <style>
+    .course-progress-bar {
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      height: 8px;
+      margin-top: 28px;
+      overflow: hidden;
+    }
+    .course-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--limedeep), var(--lime));
+      border-radius: 20px;
+      transition: width 1s ease;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.55);
+    }
+    .welcome-tag {
+      display: inline-block;
+      background: rgba(82,183,136,0.25);
+      border: 1px solid rgba(82,183,136,0.5);
+      color: var(--lime);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+      text-transform: uppercase;
+    }
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.9);
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-top: 20px;
+      width: fit-content;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="topbar-brand">🌿 BI · Sostenibilidad Ambiental</span>
+    <span class="topbar-sep">|</span>
+    <span class="topbar-loc">Índice del Curso</span>
+    <div class="topbar-spacer"></div>
+    <span id="top-progress" style="font-size:0.8rem;color:rgba(255,255,255,0.7);font-family:var(--font-mono)">0 / 52 días</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="index-hero">
+  <div style="max-width:1140px;margin:0 auto;position:relative;z-index:1">
+    <div class="welcome-tag">Programa de Formación — NEXTPLAY Consulting</div>
+    <h1 style="font-family:var(--font-display);font-size:2.8rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:12px">
+      Business Intelligence<br>
+      <span style="color:var(--lime)">para Sostenibilidad Ambiental</span>
+    </h1>
+    <p style="color:rgba(255,255,255,0.75);font-size:1rem;font-weight:300;max-width:560px;margin-bottom:0">
+      De cero a experto en BI aplicado a sostenibilidad · 52 días · 1 hora diaria<br>
+      <em>Diseñado para Ingeniería Ambiental + Gerencia de Proyectos</em>
+    </p>
+    <div class="course-progress-bar">
+      <div class="course-progress-fill" id="hero-progress-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progress-start">Inicio</span>
+      <span id="progress-pct">0% completado</span>
+      <span>52 días · 52 horas</span>
+    </div>
+    <div class="streak-badge" id="streak-badge" style="display:none">
+      🔥 <span id="streak-text"></span>
+    </div>
+
+    <div class="index-stats" style="margin-top:32px">
+      <div class="stat-pill"><div class="stat-num" id="stat-completed">0</div><div class="stat-label">Días completados</div></div>
+      <div class="stat-pill highlight"><div class="stat-num">52</div><div class="stat-label">Días totales</div></div>
+      <div class="stat-pill"><div class="stat-num">8</div><div class="stat-label">Niveles</div></div>
+      <div class="stat-pill"><div class="stat-num" id="stat-avg">—</div><div class="stat-label">Promedio quiz</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEVELS -->
+<div class="levels-grid">
+
+  <div style="margin-bottom:24px">
+    <h2 style="font-family:var(--font-display);font-size:1.5rem;color:var(--forest);margin-bottom:6px">Ruta de Aprendizaje</h2>
+    <p style="color:var(--text-muted);font-size:0.9rem">Haz clic en cada nivel para ver los días. Los días con 🔓 tienen material listo para estudiar.</p>
+  </div>
+
+  <div id="levels-container"></div>
+
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--forest);color:rgba(255,255,255,0.6);text-align:center;padding:24px;font-size:0.8rem">
+  <span style="color:var(--lime);font-family:var(--font-display)">"Un buen dashboard no muestra todo. Muestra lo que importa."</span><br>
+  <span style="margin-top:6px;display:block">NEXTPLAY Consulting · BI para Sostenibilidad Ambiental · 2025</span>
+  <span style="margin-top:8px;display:block;font-size:0.72rem;font-family:var(--font-mono);color:rgba(255,255,255,0.4)">© Derechos Reservados · Elida Landaeta — Ingeniero Ambiental y Especialista en Gerencia de Proyectos · 2026</span>
+</footer>
+
+<script>
+// ─── COURSE DATA ─────────────────────────────────────────────────────────────
+const EXISTING_DAYS = [1, 2, 3, 4]; // Add day numbers here as HTML files are created
+
+const LEVELS = [
+  { n:'I', name:'Fundamentos de Business Intelligence', days:'Días 1–6', total:'6 horas',
+    color:'#1B4332', light:'#D8F3DC', mid:'#52B788',
+    desc:'Qué es el BI, el ciclo de los datos y su valor estratégico en ingeniería ambiental 2026.',
+    items:[
+      { d:1, t:'¿Qué es Business Intelligence?', types:['Teoría'] },
+      { d:2, t:'La pirámide DIKW: datos → información → conocimiento', types:['Teoría'] },
+      { d:3, t:'Los 4 tipos de analítica', types:['Teoría'] },
+      { d:4, t:'BI aplicado a sostenibilidad: casos reales', types:['Teoría','Mercado'] },
+      { d:5, t:'El ROI del BI: cómo justificar su implementación', types:['Práctica','Mercado'] },
+      { d:6, t:'Repaso y mapa de ruta personal del curso', types:['Taller'] },
+    ]
+  },
+  { n:'II', name:'Indicadores y Marcos de Referencia Internacionales', days:'Días 7–15', total:'9 horas',
+    color:'#1565C0', light:'#DBEAFE', mid:'#3B82F6',
+    desc:'Definir, clasificar y seleccionar indicadores correctos con SMART y los marcos que exigen las multinacionales.',
+    items:[
+      { d:7,  t:'¿Qué es un indicador? KPI, OPI y EPI', types:['Teoría'] },
+      { d:8,  t:'Indicadores de proceso, resultado e impacto', types:['Teoría'] },
+      { d:9,  t:'Las 15 métricas ambientales más demandadas', types:['Práctica','Mercado'] },
+      { d:10, t:'El método SMART para indicadores ambientales', types:['Práctica','Taller'] },
+      { d:11, t:'Las 10 preguntas clave antes de crear un indicador', types:['Práctica'] },
+      { d:12, t:'GRI Standards: el marco más utilizado del mundo', types:['Teoría','Mercado'] },
+      { d:13, t:'ISO 14001, ISO 14031 y los ODS de la ONU', types:['Teoría'] },
+      { d:14, t:'TCFD, ISSB, CSRD/ESRS: marcos que obligan a reportar', types:['Teoría','Mercado'] },
+      { d:15, t:'Taller: diseñar el set completo de indicadores', types:['Taller'] },
+    ]
+  },
+  { n:'III', name:'Diseño de Tableros de Control', days:'Días 16–22', total:'7 horas',
+    color:'#7C1048', light:'#FCE4EC', mid:'#E91E8C',
+    desc:'Cómo diseñar tableros que comunican con claridad, permiten decidir en 5 segundos y evitan errores comunes.',
+    items:[
+      { d:16, t:'Tipos de tablero: estratégico, operativo, analítico', types:['Teoría'] },
+      { d:17, t:'Anatomía de un tablero: los 6 elementos clave', types:['Teoría'] },
+      { d:18, t:'Layout y distribución: pirámide invertida', types:['Práctica'] },
+      { d:19, t:'Principios de Tufte, Few y la Gestalt', types:['Teoría'] },
+      { d:20, t:'Color, tipografía y semáforos', types:['Práctica'] },
+      { d:21, t:'Los 10 errores más comunes en dashboards', types:['Práctica'] },
+      { d:22, t:'Taller: wireframing del primer tablero ambiental', types:['Taller'] },
+    ]
+  },
+  { n:'IV', name:'Herramientas de Business Intelligence', days:'Días 23–31', total:'9 horas',
+    color:'#C84B00', light:'#FFF0E0', mid:'#F97316',
+    desc:'Comparativa objetiva de plataformas y dominio práctico de la ruta Excel → Looker Studio → Power BI.',
+    items:[
+      { d:23, t:'Panorama de herramientas 2025: cuál elegir', types:['Teoría','Mercado'] },
+      { d:24, t:'Excel como base: PivotTables y estructura de datos', types:['Herramienta','Práctica'] },
+      { d:25, t:'Excel avanzado: Power Query y Power Pivot', types:['Herramienta','Práctica'] },
+      { d:26, t:'Google Looker Studio: primer dashboard gratis', types:['Herramienta','Práctica'] },
+      { d:27, t:'Power BI Desktop: instalación y primer proyecto', types:['Herramienta','Práctica'] },
+      { d:28, t:'Power BI: modelado de datos y relaciones', types:['Herramienta'] },
+      { d:29, t:'Power BI: DAX básico para indicadores ambientales', types:['Herramienta','Práctica'] },
+      { d:30, t:'Power BI: diseño profesional y publicación', types:['Herramienta','Práctica'] },
+      { d:31, t:'Taller: primer tablero de sostenibilidad en Power BI', types:['Taller'] },
+    ]
+  },
+  { n:'V', name:'Datos Limpios y el Proceso ETL', days:'Días 32–37', total:'6 horas',
+    color:'#4A148C', light:'#EDE9FE', mid:'#8B5CF6',
+    desc:'El cimiento invisible: por qué los datos malos destruyen cualquier análisis y cómo garantizar calidad auditable.',
+    items:[
+      { d:32, t:'¿Por qué los datos limpios son el cimiento de todo?', types:['Teoría'] },
+      { d:33, t:'El proceso ETL explicado para datos ambientales', types:['Teoría','Práctica'] },
+      { d:34, t:'Los 10 errores más frecuentes en datos de campo', types:['Práctica'] },
+      { d:35, t:'Detectar y corregir errores con Power Query', types:['Herramienta','Práctica'] },
+      { d:36, t:'Documentación: diccionario de datos y metadatos', types:['Práctica'] },
+      { d:37, t:'Taller: auditar y limpiar un dataset ambiental', types:['Taller'] },
+    ]
+  },
+  { n:'VI', name:'Dashboards con Inteligencia Artificial (HTML)', days:'Días 38–42', total:'5 horas',
+    color:'#00565A', light:'#CCFBF1', mid:'#14B8A6',
+    desc:'Construir tableros interactivos y profesionales usando prompts de IA, sin necesidad de saber programar.',
+    items:[
+      { d:38, t:'Cómo la IA construye dashboards desde texto', types:['Práctica','Herramienta'] },
+      { d:39, t:'Anatomía de un prompt exitoso para dashboards HTML', types:['Práctica'] },
+      { d:40, t:'Taller guiado: construir el tablero EcoTrack', types:['Taller'] },
+      { d:41, t:'Técnicas de iteración: refinar el tablero', types:['Práctica'] },
+      { d:42, t:'Taller final: tu tablero de sostenibilidad personalizado', types:['Taller'] },
+    ]
+  },
+  { n:'VII', name:'Mercado ESG, Tendencias y Perfil Profesional', days:'Días 43–46', total:'4 horas',
+    color:'#9A2A00', light:'#FEE2D5', mid:'#EF4444',
+    desc:'El mercado laboral real, las regulaciones que crean demanda y cómo posicionarte como perfil T-shaped.',
+    items:[
+      { d:43, t:'El mercado ESG y de BI en 2025: cifras y tendencias', types:['Mercado'] },
+      { d:44, t:'Regulaciones globales: CSRD, ISSB, América Latina', types:['Mercado'] },
+      { d:45, t:'Lo que buscan Veolia, AECOM, Cemex, WSP y Ecopetrol', types:['Mercado'] },
+      { d:46, t:'Ruta de carrera y certificaciones: tu plan de 4 años', types:['Mercado','Práctica'] },
+    ]
+  },
+  { n:'VIII', name:'Proyecto Final Integrador', days:'Días 47–52', total:'6 horas',
+    color:'#263238', light:'#ECEFF1', mid:'#607D8B',
+    desc:'Construir un tablero de sostenibilidad ambiental real de principio a fin — tu entregable profesional.',
+    items:[
+      { d:47, t:'Definición del proyecto: alcance e indicadores', types:['Taller'] },
+      { d:48, t:'Diseño del layout: wireframe aprobado', types:['Taller'] },
+      { d:49, t:'Preparación y limpieza del dataset: ETL completo', types:['Taller','Práctica'] },
+      { d:50, t:'Construcción del tablero: sesión de trabajo principal', types:['Taller','Herramienta'] },
+      { d:51, t:'Refinamiento, validación y narrativa del tablero', types:['Taller'] },
+      { d:52, t:'Presentación y evaluación final del proyecto', types:['Taller'] },
+    ]
+  }
+];
+
+const TYPE_CLASS = {
+  'Teoría':'badge-teoria','Práctica':'badge-practica','Taller':'badge-taller',
+  'Herramienta':'badge-herramienta','Mercado':'badge-mercado'
+};
+
+// ─── PROGRESS ────────────────────────────────────────────────────────────────
+function getProgress() {
+  try { return JSON.parse(localStorage.getItem('bi_course_progress')) || { completed:[], scores:{} }; }
+  catch { return { completed:[], scores:{} }; }
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const prog = getProgress();
+  const completed = prog.completed || [];
+  const scores = prog.scores || {};
+  const totalDays = 52;
+
+  // Update hero stats
+  const pct = Math.round((completed.length / totalDays) * 100);
+  document.getElementById('hero-progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = pct + '% completado';
+  document.getElementById('stat-completed').textContent = completed.length;
+  document.getElementById('top-progress').textContent = `${completed.length} / ${totalDays} días`;
+
+  // Average score
+  const scoreVals = Object.values(scores);
+  if (scoreVals.length) {
+    const avg = (scoreVals.reduce((a,b)=>a+b,0)/scoreVals.length).toFixed(1);
+    document.getElementById('stat-avg').textContent = avg + '/5';
+  }
+
+  // Streak badge
+  if (prog.startDate) {
+    const days = Math.floor((Date.now() - new Date(prog.startDate)) / 86400000) + 1;
+    document.getElementById('streak-badge').style.display = 'flex';
+    document.getElementById('streak-text').textContent = `${days} días de estudio`;
+  }
+
+  // Render levels
+  const container = document.getElementById('levels-container');
+  container.innerHTML = '';
+
+  LEVELS.forEach((level, li) => {
+    const levelCompleted = level.items.filter(i => completed.includes(i.d));
+    const firstUnlockedDay = level.items.find(i => EXISTING_DAYS.includes(i.d) && !completed.includes(i.d));
+    const card = document.createElement('div');
+    card.className = 'level-card';
+    card.style.setProperty('--level-color', level.color);
+
+    const dayItems = level.items.map(item => {
+      const isDone = completed.includes(item.d);
+      const hasFile = EXISTING_DAYS.includes(item.d);
+      const isCurrent = !isDone && hasFile && (completed.length === 0 || completed.includes(item.d - 1) || EXISTING_DAYS.includes(item.d));
+      const isLocked = !hasFile;
+      const score = scores[item.d];
+      const badges = item.types.map(t => `<span class="badge ${TYPE_CLASS[t]||''}">${t}</span>`).join('');
+
+      let stateClass = isLocked ? 'locked' : isDone ? 'completed' : isCurrent ? 'current unlocked' : 'unlocked';
+      let numStyle = isDone ? `background:${level.light};color:${level.color}`
+                   : hasFile ? `background:${level.color};color:#fff`
+                   : 'background:#e5e7eb;color:#9ca3af';
+      let statusHtml = isLocked
+        ? '<span class="day-status" title="Material no disponible aún">🔒</span>'
+        : isDone
+          ? `<span class="day-status" title="Completado · Score: ${score??'—'}/5" style="color:#22C55E">✓ ${score??'—'}/5</span>`
+          : hasFile ? '<span class="day-status" style="color:var(--limedeep)">🔓 Listo</span>'
+          : '';
+
+      const href = hasFile ? `dia-${String(item.d).padStart(2,'0')}.html` : null;
+      const tag = href ? 'a' : 'div';
+      const hrefAttr = href ? `href="${href}"` : '';
+
+      return `<${tag} class="day-item ${stateClass}" ${hrefAttr} ${isLocked?'onclick="return false"':''}>
+        <div class="day-num-badge ${isLocked?'locked':isDone?'completed':'current'}" style="${numStyle}">${String(item.d).padStart(2,'0')}</div>
+        <div class="day-title-text">${item.t}</div>
+        <div class="day-badges">${badges}</div>
+        ${statusHtml}
+      </${tag}>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="level-header" data-level="${li}">
+        <div class="level-num-chip" style="background:${level.color};box-shadow:0 4px 12px ${level.color}44">${level.n}</div>
+        <div class="level-info">
+          <div class="level-name">${level.name}</div>
+          <div class="level-meta">${level.days} · ${level.total} · ${level.desc.slice(0,70)}…</div>
+        </div>
+        <div class="level-right">
+          <div style="text-align:right">
+            <div class="level-progress-text" style="color:${level.color}">${levelCompleted.length}/${level.items.length}</div>
+            <div style="width:80px;background:#e5e7eb;border-radius:4px;height:4px;margin-top:4px">
+              <div style="width:${(levelCompleted.length/level.items.length)*100}%;background:${level.color};height:4px;border-radius:4px;transition:width 0.5s"></div>
+            </div>
+          </div>
+          <div class="level-toggle" id="toggle-${li}">▶</div>
+        </div>
+      </div>
+      <div class="level-body" id="body-${li}">
+        <div class="days-list">${dayItems}</div>
+      </div>`;
+    container.appendChild(card);
+
+    card.querySelector('.level-header').addEventListener('click', () => {
+      const body = document.getElementById(`body-${li}`);
+      const tog = document.getElementById(`toggle-${li}`);
+      const open = body.classList.toggle('open');
+      tog.classList.toggle('open', open);
+    });
+
+    // Auto-open level with active days
+    if (level.items.some(i => EXISTING_DAYS.includes(i.d) && !completed.includes(i.d))) {
+      document.getElementById(`body-${li}`).classList.add('open');
+      document.getElementById(`toggle-${li}`).classList.add('open');
+    }
+  });
+}
+
+// Unlock a level if it contains current content
+document.addEventListener('DOMContentLoaded', render);
+</script>
+</body>
+</html>

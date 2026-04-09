@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Día 2 — La pirámide DIKW | BI para Sostenibilidad</title>
+  <link rel="stylesheet" href="bi-styles.css">
+  <style>
+    :root { --level-color: #1B4332; --level-light: #D8F3DC; --level-mid: #52B788; }
+    .pyramid { display:flex; flex-direction:column; gap:4px; align-items:center; margin:28px auto; max-width:560px; }
+    .pyramid-tier {
+      border-radius:var(--radius-sm);
+      padding:18px 24px;
+      text-align:center;
+      cursor:pointer;
+      transition:all 0.2s;
+      border:2px solid transparent;
+      position:relative;
+    }
+    .pyramid-tier:hover { transform:scale(1.01); box-shadow:0 4px 20px rgba(0,0,0,0.12); }
+    .pyramid-tier.active { border-color:currentColor; box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+    .tier-label { font-weight:700; font-size:1rem; margin-bottom:4px; }
+    .tier-sub { font-size:0.8rem; opacity:0.85; }
+    .tier-arrow { font-size:1.2rem; color:var(--text-muted); text-align:center; margin:0; }
+    .tier-detail {
+      background:var(--bg-card);
+      border-radius:var(--radius);
+      padding:24px 28px;
+      border:1px solid var(--border);
+      margin-top:16px;
+      display:none;
+      animation:fadeUp 0.3s ease;
+    }
+    .tier-detail.show { display:block; }
+    .tier-detail-title { font-family:var(--font-display); font-size:1.3rem; margin-bottom:12px; }
+    .example-pill { display:inline-block; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:8px 12px; font-family:var(--font-mono); font-size:0.82rem; color:var(--text); margin:6px 4px 6px 0; }
+    .flow-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:20px 0; }
+    .flow-cell { background:var(--bg-card); border-radius:var(--radius-sm); padding:16px; border:1px solid var(--border); border-top:3px solid; }
+    .flow-cell-label { font-size:0.7rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px; }
+    .flow-cell-content { font-size:0.82rem; color:var(--text-muted); font-style:italic; line-height:1.5; }
+    .stuck-card { background:var(--bg-card); border-radius:var(--radius); padding:20px 24px; border-left:4px solid var(--level-color); margin-bottom:12px; }
+    .stuck-num { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:var(--level-color); color:#fff; font-size:0.78rem; font-weight:700; margin-right:10px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0; }
+    .value-card { background:var(--bg-card); border-radius:var(--radius-sm); padding:18px; border:1px solid var(--border); text-align:center; }
+    .value-num { font-family:var(--font-display); font-size:2rem; font-weight:700; }
+    .value-label { font-size:0.78rem; color:var(--text-muted); margin-top:4px; }
+    .value-desc { font-size:0.8rem; margin-top:8px; color:var(--text); }
+    @media(max-width:700px){.flow-row{grid-template-columns:1fr 1fr;}.grid-2{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="topbar-back">← Índice</a>
+    <span class="topbar-sep">|</span>
+    <span class="topbar-brand">🌿 BI · Sostenibilidad Ambiental</span>
+    <span class="topbar-sep">|</span>
+    <span class="topbar-loc" style="color:var(--lime)">Día 2 · Nivel I</span>
+    <div class="topbar-spacer"></div>
+    <div id="timer-container"></div>
+  </div>
+</nav>
+
+<div class="day-layout">
+  <aside class="day-sidebar">
+    <div class="sidebar-title">Sesión de hoy</div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-item" data-target="agenda"><div class="sidebar-dot"></div><div class="sidebar-label">⏱ Agenda de la sesión</div></div>
+      <div class="sidebar-item" data-target="hook"><div class="sidebar-dot"></div><div class="sidebar-label">🎯 Pregunta detonadora</div></div>
+      <div class="sidebar-item" data-target="s1"><div class="sidebar-dot"></div><div class="sidebar-label">Sección 1 · Los 4 niveles DIKW</div></div>
+      <div class="sidebar-item" data-target="s2"><div class="sidebar-dot"></div><div class="sidebar-label">Sección 2 · De 3.650 filas a decisión</div></div>
+      <div class="sidebar-item" data-target="s3"><div class="sidebar-dot"></div><div class="sidebar-label">Sección 3 · Dónde se atascan las orgs</div></div>
+      <div class="sidebar-item" data-target="remember"><div class="sidebar-dot"></div><div class="sidebar-label">✅ Lo que debes recordar</div></div>
+      <div class="sidebar-item" data-target="exercise"><div class="sidebar-dot"></div><div class="sidebar-label">✏️ Ejercicio de aplicación</div></div>
+      <div class="sidebar-item" data-target="quiz"><div class="sidebar-dot"></div><div class="sidebar-label">🧠 Quiz del día (5 preguntas)</div></div>
+      <div class="sidebar-item" data-target="complete"><div class="sidebar-dot"></div><div class="sidebar-label">🏁 Completar sesión</div></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-progress-label">Tiempo de sesión</div>
+      <div class="sidebar-timer" id="timer-container-side"></div>
+    </div>
+  </aside>
+
+  <main class="day-main">
+
+    <div class="hero-band" style="--level-color:#1B4332">
+      <div class="hero-band-content">
+        <div class="hero-eyebrow">Día 2 · Nivel I — Fundamentos de Business Intelligence · 60 minutos</div>
+        <div class="hero-title">La pirámide DIKW</div>
+        <div class="hero-subtitle">Datos → Información → Conocimiento → Sabiduría · El modelo conceptual más importante del BI</div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <span class="badge badge-teoria">Teoría</span>
+          <span class="badge" style="background:rgba(255,255,255,0.15);color:#fff">60 min</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- AGENDA -->
+    <section class="content-section" data-section="agenda">
+      <div class="section-eyebrow">Antes de empezar</div>
+      <div class="section-title">Agenda de la sesión</div>
+      <div class="section-divider"></div>
+      <div class="card" style="overflow:hidden">
+        <table class="agenda-table" style="width:100%">
+          <tr><td>Min 1–5</td><td>Leer la agenda y la pregunta detonadora</td></tr>
+          <tr><td>Min 6–20</td><td><strong>Sección 1:</strong> Los 4 niveles de la pirámide DIKW (pirámide interactiva)</td></tr>
+          <tr><td>Min 21–34</td><td><strong>Sección 2:</strong> Aplicación completa — de 3.650 filas de datos a una decisión</td></tr>
+          <tr><td>Min 35–46</td><td><strong>Sección 3:</strong> ¿Dónde se quedan atascadas las organizaciones?</td></tr>
+          <tr><td>Min 47–54</td><td>Checklist "Lo que debes recordar" y ejercicio de reflexión</td></tr>
+          <tr><td>Min 55–60</td><td>Quiz del día (5 preguntas) y completar sesión</td></tr>
+        </table>
+      </div>
+      <div class="callout callout-tip" style="margin-top:16px">
+        <div class="callout-title"><span class="callout-icon">🔗</span> Conexión con el Día 1</div>
+        <p style="margin:0">Ayer aprendiste que el BI tiene 4 pasos: recolección, transformación, análisis y decisión. Hoy vas a entender <strong>por qué</strong> esos pasos son necesarios: porque los datos crudos no significan nada sin contexto. La pirámide DIKW es el mapa conceptual que explica esa transformación.</p>
+      </div>
+    </section>
+
+    <!-- HOOK -->
+    <section class="content-section" data-section="hook">
+      <div class="section-eyebrow">Activación</div>
+      <div class="section-title">Pregunta detonadora</div>
+      <div class="section-divider"></div>
+      <div class="callout callout-hook">
+        <div class="callout-title"><span class="callout-icon">🎯</span> Antes de leer, imagina este escenario:</div>
+        <p style="color:rgba(255,255,255,0.9);font-style:italic;font-size:1.05rem;line-height:1.6;margin-bottom:12px">
+          "Tienes ante ti el registro de monitoreo de calidad del agua de un río durante los últimos 12 meses: <strong style="color:var(--lime)">3.650 filas</strong> con lecturas de pH, DBO₅, DQO, sólidos suspendidos, coliformes y temperatura — una lectura cada 2 horas."
+        </p>
+        <p style="color:var(--lime);font-weight:600;font-size:1rem;margin:0">
+          ¿Eso es información útil? ¿O son solo datos? ¿Qué necesitas hacer con esas 3.650 filas para que se conviertan en algo con lo que puedas decidir?
+        </p>
+      </div>
+      <p style="margin-top:20px">La respuesta a esa pregunta es la razón de ser de la pirámide DIKW. Al final de esta sesión, sabrás exactamente cómo transformar esas 3.650 filas en una recomendación concreta para tu cliente o para el comité directivo.</p>
+    </section>
+
+    <!-- SECCIÓN 1 -->
+    <section class="content-section" data-section="s1">
+      <div class="section-eyebrow">Sección 1 de 3</div>
+      <div class="section-title">Los 4 niveles de la pirámide DIKW</div>
+      <div class="section-divider"></div>
+
+      <p>La pirámide <span class="tooltip-wrap">DIKW<span class="tooltip-trigger">?</span><span class="tooltip-bubble">Acrónimo de Data-Information-Knowledge-Wisdom. Formalizada por Russell Ackoff en 1989 en su artículo "From Data to Wisdom" en el Journal of Applied Systems Analysis.</span></span> (Data-Information-Knowledge-Wisdom) fue formalizada por Russell Ackoff en 1989. Es el modelo conceptual más importante del BI porque explica por qué tener <strong>muchos datos no significa tener información</strong>, y por qué tener información no significa saber qué hacer.</p>
+
+      <div class="callout callout-key">
+        <div class="callout-title"><span class="callout-icon">📌</span> La regla de la pirámide</div>
+        <p style="margin:0">A medida que subes en la pirámide, el <strong>volumen disminuye</strong> pero el <strong>valor y el contexto aumentan enormemente</strong>. Una organización que gestiona miles de datos debería llegar a una sola decisión concreta — no a otro Excel más grande.</p>
+      </div>
+
+      <p style="margin-top:20px">Haz clic en cada nivel de la pirámide para ver su explicación detallada con ejemplos de ingeniería ambiental:</p>
+
+      <!-- INTERACTIVE PYRAMID -->
+      <div class="pyramid">
+        <div class="pyramid-tier" style="width:40%;background:#4A148C;color:#fff" onclick="showTier('d4','#4A148C')">
+          <div class="tier-label">🦉 Sabiduría</div>
+          <div class="tier-sub">Wisdom</div>
+        </div>
+        <div class="tier-arrow">▼</div>
+        <div class="pyramid-tier" style="width:60%;background:#1565C0;color:#fff" onclick="showTier('d3','#1565C0')">
+          <div class="tier-label">💡 Conocimiento</div>
+          <div class="tier-sub">Knowledge</div>
+        </div>
+        <div class="tier-arrow">▼</div>
+        <div class="pyramid-tier" style="width:78%;background:#1B4332;color:#fff" onclick="showTier('d2','#1B4332')">
+          <div class="tier-label">📊 Información</div>
+          <div class="tier-sub">Information</div>
+        </div>
+        <div class="tier-arrow">▼</div>
+        <div class="pyramid-tier" style="width:96%;background:#37474F;color:#fff" onclick="showTier('d1','#37474F')">
+          <div class="tier-label">📁 Datos</div>
+          <div class="tier-sub">Data</div>
+        </div>
+      </div>
+      <p style="text-align:center;font-size:0.8rem;color:var(--text-muted);margin-top:4px">↑ Haz clic en cada nivel para explorar su explicación y ejemplos</p>
+
+      <div id="tier-detail-container">
+        <div id="d1" class="tier-detail">
+          <div class="tier-detail-title" style="color:#37474F">Nivel 1 — Datos (Data)</div>
+          <p>Son <strong>hechos crudos, observaciones sin contexto</strong>, sin interpretación y sin relación con nada más. Los datos no dicen nada por sí mismos. Pueden ser correctos o incorrectos, pero solos no tienen significado útil.</p>
+          <p><strong>Características:</strong> Sin contexto, sin unidad de referencia, sin comparación, sin período.</p>
+          <p><strong>Ejemplos en ingeniería ambiental:</strong></p>
+          <span class="example-pill">38.5°C</span>
+          <span class="example-pill">pH = 6.8</span>
+          <span class="example-pill">1.247</span>
+          <span class="example-pill">450 kWh</span>
+          <span class="example-pill">0.024 mg/L</span>
+          <span class="example-pill">78%</span>
+          <div class="callout callout-warn" style="margin-top:16px">
+            <div class="callout-title"><span class="callout-icon">🤔</span> ¿Qué significa 6.8?</div>
+            <p style="margin:0">El pH = 6.8 solo como dato no dice nada. ¿Es del río? ¿Del suelo? ¿De un efluente industrial? ¿Es alto o bajo? ¿Está dentro de la norma? Sin contexto, es inutilizable para decidir.</p>
+          </div>
+        </div>
+        <div id="d2" class="tier-detail">
+          <div class="tier-detail-title" style="color:#1B4332">Nivel 2 — Información (Information)</div>
+          <p>Son datos <strong>organizados con contexto</strong>: tienen una fuente, un período, una ubicación, una unidad y un punto de comparación. La información responde preguntas básicas: ¿qué?, ¿cuándo?, ¿dónde?, ¿cuánto?</p>
+          <p><strong>El mismo dato anterior, convertido en información:</strong></p>
+          <div class="callout callout-example">
+            <p><strong>pH = 6.8</strong> medido en el punto de monitoreo <strong>P-3 del río Bogotá</strong>, el 15 de marzo de 2025 a las 10:00 AM, dentro del rango permisible de <strong>6.0 a 9.0</strong> según la Resolución 0631 de 2015.</p>
+            <p><strong>Consumo energético: 450 kWh</strong> en la planta de tratamiento norte, semana del 10 al 16 de marzo, un <strong>12% más</strong> que la semana anterior.</p>
+            <p style="margin:0"><strong>1.247 toneladas de CO₂ equivalente</strong> emitidas en el Q1 2025 por combustión de gas natural en la planta principal, representando el <strong>34% de la meta anual</strong> con el 25% del año transcurrido.</p>
+          </div>
+          <p>¿Ves la diferencia? Ahora el dato tiene: fuente, ubicación, período, unidad y comparación. Ya es útil — pero todavía no es suficiente para decidir con seguridad.</p>
+        </div>
+        <div id="d3" class="tier-detail">
+          <div class="tier-detail-title" style="color:#1565C0">Nivel 3 — Conocimiento (Knowledge)</div>
+          <p>Es información <strong>analizada, relacionada con otra información y con experiencia previa</strong>. El conocimiento responde a ¿por qué? y ¿qué significa esto? Aquí es donde el experto ambiental añade su valor insustituible.</p>
+          <div class="callout callout-example">
+            <p><strong>La misma información, convertida en conocimiento:</strong></p>
+            <p>El pH de 6.8 en P-3 está dentro del rango permisible, pero en la misma fecha del año anterior era 7.4. La <strong>tendencia a la baja en los últimos 6 meses</strong> correlaciona con el aumento de descargas industriales 3 km aguas arriba. Si continúa, cruzará el límite inferior de 6.0 en aproximadamente <strong>4 meses</strong>.</p>
+            <p style="margin:0">El aumento del 12% en consumo energético se explica porque la <strong>bomba de recirculación secundaria</strong> está operando fuera de su curva de eficiencia desde el mantenimiento del 8 de marzo. Necesita recalibración.</p>
+          </div>
+          <div class="callout callout-tip" style="margin-top:12px">
+            <div class="callout-title"><span class="callout-icon">🌿</span> Tu valor como profesional</div>
+            <p style="margin:0">El BI automatiza el salto de Datos a Información. Pero el salto de Información a Conocimiento requiere tu expertise técnico en ingeniería ambiental. Ningún software puede reemplazar ese análisis experto.</p>
+          </div>
+        </div>
+        <div id="d4" class="tier-detail">
+          <div class="tier-detail-title" style="color:#4A148C">Nivel 4 — Sabiduría (Wisdom)</div>
+          <p>Es conocimiento aplicado con <strong>juicio, experiencia acumulada y consideración del contexto más amplio</strong>: regulatorio, económico, social, institucional. La sabiduría responde ¿qué debo hacer? y ¿cuál es la mejor decisión dado todo lo que sé?</p>
+          <div class="callout callout-example">
+            <p><strong>El conocimiento anterior, convertido en sabiduría (decisión):</strong></p>
+            <p>Solicitar a la autoridad ambiental una mesa de trabajo con las industrias aguas arriba <strong>antes de que el pH supere el límite</strong>, evitando una sanción y preservando la relación institucional. Costo: 2 semanas de gestión. Beneficio: evitar multa de $500M.</p>
+            <p style="margin:0">Programar la recalibración de la bomba para el martes en el turno de menor demanda. Costo: $800 USD. Beneficio: evitar ~$1.200 USD en energía desperdiciada en 3 semanas.</p>
+          </div>
+          <div class="callout callout-tip" style="margin-top:12px">
+            <div class="callout-title"><span class="callout-icon">⚡</span> Tu especialización en gerencia de proyectos</div>
+            <p style="margin:0">La sabiduría es donde tu formación en gerencia de proyectos marca la diferencia. La decisión óptima no es solo técnicamente correcta — también considera el contexto regulatorio, los costos, los plazos del proyecto y las relaciones con los stakeholders.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2 -->
+    <section class="content-section" data-section="s2">
+      <div class="section-eyebrow">Sección 2 de 3</div>
+      <div class="section-title">De 3.650 filas a una decisión concreta</div>
+      <div class="section-divider"></div>
+      <p>Volvamos al escenario de la pregunta detonadora. Tienes el dataset de calidad del agua de un río — 3.650 filas. Así sube por la pirámide DIKW:</p>
+
+      <div class="flow-row">
+        <div class="flow-cell" style="border-top-color:#37474F">
+          <div class="flow-cell-label" style="color:#37474F">📁 DATOS</div>
+          <div class="flow-cell-content">Las 3.650 filas crudas del sensor. pH = 6.8, DBO₅ = 38 mg/L, T = 22°C... Cada registro es un hecho sin significado.</div>
+        </div>
+        <div class="flow-cell" style="border-top-color:#1B4332">
+          <div class="flow-cell-label" style="color:#1B4332">📊 INFORMACIÓN</div>
+          <div class="flow-cell-content">Promedios semanales, máximos y mínimos mensuales, comparación con límites de la Res. 0631. Tablas y gráficos con contexto.</div>
+        </div>
+        <div class="flow-cell" style="border-top-color:#1565C0">
+          <div class="flow-cell-label" style="color:#1565C0">💡 CONOCIMIENTO</div>
+          <div class="flow-cell-content">El DBO₅ supera el límite en semanas con lluvia >40mm. Hay escorrentía no controlada aguas arriba que se activa con precipitación intensa.</div>
+        </div>
+        <div class="flow-cell" style="border-top-color:#4A148C">
+          <div class="flow-cell-label" style="color:#4A148C">🦉 SABIDURÍA</div>
+          <div class="flow-cell-content">Recomendar instalar una trampa de sedimentos antes de octubre. Costo: $12M. Riesgo evitado: multa de $180M y cierre de concesión.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-key" style="margin-top:8px">
+        <div class="callout-title"><span class="callout-icon">⭐</span> El valor del perfil T-shaped</div>
+        <p style="margin:0">Cualquier sistema BI puede automatizar el paso de <strong>Datos → Información</strong>. El paso de <strong>Información → Conocimiento</strong> requiere tu expertise técnico en ingeniería ambiental. El paso de <strong>Conocimiento → Sabiduría</strong> requiere tu formación en gerencia de proyectos. <em>El BI no te reemplaza. Amplifica todo lo que ya sabes.</em></p>
+      </div>
+
+      <h3 style="margin:28px 0 12px">¿Cuánto valor tiene cada nivel?</h3>
+      <div class="grid-2">
+        <div class="value-card"><div class="value-num" style="color:#37474F">📁</div><div class="value-label">Datos</div><div class="value-desc">Volumen máximo, valor mínimo. Sin contexto, son invisibles para quien decide.</div></div>
+        <div class="value-card"><div class="value-num" style="color:#1B4332">📊</div><div class="value-label">Información</div><div class="value-desc">Responde qué pasó. Útil para describir, no para decidir.</div></div>
+        <div class="value-card"><div class="value-num" style="color:#1565C0">💡</div><div class="value-label">Conocimiento</div><div class="value-desc">Responde por qué pasó. Aquí empieza el valor real para el gerente.</div></div>
+        <div class="value-card"><div class="value-num" style="color:#4A148C">🦉</div><div class="value-label">Sabiduría</div><div class="value-desc">Volumen mínimo, valor máximo. Una decisión bien fundamentada puede valer millones.</div></div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 3 -->
+    <section class="content-section" data-section="s3">
+      <div class="section-eyebrow">Sección 3 de 3</div>
+      <div class="section-title">¿Dónde se quedan atascadas las organizaciones?</div>
+      <div class="section-divider"></div>
+      <p>El problema más frecuente en organizaciones ambientales es quedarse atascadas entre los niveles de <strong>Datos e Información</strong> — y nunca llegar al Conocimiento que permite decidir. Esto ocurre por tres razones principales:</p>
+
+      <div class="stuck-card">
+        <div><span class="stuck-num">1</span><strong>Los datos viven en silos desconectados</strong></div>
+        <p style="margin-top:10px;margin-bottom:0;font-size:0.9rem">Los registros de campo están en un cuaderno. Los análisis de laboratorio llegan en PDF. El consumo de energía está en una factura en papel. El seguimiento presupuestal está en el ERP. Nadie conectó estos datos. Para crear información, alguien tiene que copiar manualmente — y ahí se introducen errores.</p>
+        <div class="callout callout-tip" style="margin-top:12px;margin-bottom:0">
+          <p style="margin:0;font-size:0.85rem"><strong>Solución que aprenderás:</strong> Power Query (en Excel y Power BI) conecta automáticamente múltiples fuentes y las consolida en un modelo único. Lo configuras una vez — se actualiza automáticamente. Día 25 del curso.</p>
+        </div>
+      </div>
+
+      <div class="stuck-card">
+        <div><span class="stuck-num">2</span><strong>La información existe pero no llega a quien decide</strong></div>
+        <p style="margin-top:10px;margin-bottom:0;font-size:0.9rem">A veces el analista tiene el conocimiento en su cabeza, pero no existe un mecanismo para que llegue a tiempo al gerente que debe actuar. El tablero de control resuelve exactamente esto: hace visible el conocimiento para quien debe decidir.</p>
+      </div>
+
+      <div class="stuck-card">
+        <div><span class="stuck-num">3</span><strong>Tableros llenos de datos que no generan conocimiento</strong></div>
+        <p style="margin-top:10px;margin-bottom:0;font-size:0.9rem">Se muestran decenas de métricas sin que ninguna responda una pregunta específica ni lleve a una acción concreta. El resultado: un tablero hermoso que nadie usa. En el Nivel III aprenderás a diseñar tableros que generan conocimiento, no solo información.</p>
+      </div>
+
+      <div class="callout callout-warn" style="margin-top:24px">
+        <div class="callout-title"><span class="callout-icon">⏱</span> La prueba de los 5 segundos (Día 18 del curso)</div>
+        <p style="margin:0">Un tablero bien diseñado debe responder la pregunta más importante de su usuario en <strong>menos de 5 segundos</strong>. Si alguien necesita más tiempo para entender el estado del proyecto, el tablero está mostrando información — no generando conocimiento. Ese es el estándar de diseño que usaremos en este curso.</p>
+      </div>
+
+      <div class="callout callout-quote" style="margin-top:20px">
+        <div class="callout-title"><span class="callout-icon">💬</span></div>
+        <p style="font-size:1.05rem;margin:0">"Un solo dato ESG no tiene significado. Solo adquiere valor cuando se conecta a su contexto: comparación histórica, meta, límite normativo, causa y acción recomendada."</p>
+        <p style="margin-top:10px;margin-bottom:0;font-size:0.78rem;opacity:0.7">— Artefact, Whitepaper ESG Data Intelligence, 2025</p>
+      </div>
+    </section>
+
+    <!-- LO QUE DEBES RECORDAR -->
+    <section class="content-section" data-section="remember">
+      <div class="section-eyebrow">Cierre de sesión</div>
+      <div class="section-title">Lo que debes recordar</div>
+      <div class="section-divider"></div>
+      <p>Marca cada punto cuando puedas explicarlo con tus propias palabras usando un ejemplo de ingeniería ambiental.</p>
+      <ul class="checklist" id="checklist">
+        <li data-key="r1"><div class="check-box"></div><div class="check-text"><strong>La pirámide DIKW tiene 4 niveles:</strong> Datos (hechos sin contexto) → Información (datos con contexto) → Conocimiento (información analizada con experiencia) → Sabiduría (conocimiento aplicado con juicio para decidir).</div></li>
+        <li data-key="r2"><div class="check-box"></div><div class="check-text"><strong>A medida que subes en la pirámide, el volumen disminuye y el valor aumenta.</strong> 3.650 filas de datos deberían llevar a una decisión concreta — no a otro Excel más grande.</div></li>
+        <li data-key="r3"><div class="check-box"></div><div class="check-text"><strong>El BI automatiza el salto de Datos a Información.</strong> El salto de Información a Conocimiento requiere tu expertise técnico ambiental. La Sabiduría requiere tu formación en gerencia de proyectos.</div></li>
+        <li data-key="r4"><div class="check-box"></div><div class="check-text"><strong>El error más frecuente es quedarse en el nivel de Información:</strong> tableros llenos de métricas que no responden ninguna pregunta ni llevan a ninguna acción.</div></li>
+        <li data-key="r5"><div class="check-box"></div><div class="check-text"><strong>Un dato ESG aislado no tiene valor.</strong> Solo lo adquiere cuando se conecta a su contexto: comparación histórica, meta, límite normativo, causa y acción recomendada.</div></li>
+      </ul>
+      <div id="checklist-progress" style="margin-top:16px;font-size:0.85rem;color:var(--text-muted);font-family:var(--font-mono)">0 / 5 puntos marcados</div>
+    </section>
+
+    <!-- EJERCICIO -->
+    <section class="content-section" data-section="exercise">
+      <div class="section-eyebrow">✏️ Ejercicio de aplicación — 5 minutos</div>
+      <div class="section-title">Aplica la pirámide a tu campo</div>
+      <div class="section-divider"></div>
+      <p>Toma el proyecto que describiste ayer (o elige uno nuevo). Para cada nivel de la pirámide, escribe un ejemplo específico con datos reales o realistas de ese proyecto. Tus respuestas se guardan automáticamente.</p>
+      <div class="exercise-wrap">
+        <div class="exercise-item">
+          <div class="exercise-q"><div class="exercise-num" style="background:#37474F">D</div><div><strong>DATOS:</strong> Escribe 3 datos crudos del proyecto (números sin contexto)</div></div>
+          <textarea class="exercise-input" data-note="ex1" placeholder="Ej: 6.8 / 450 / 1.247 · Solo el número, sin explicar qué es ni de dónde viene..."></textarea>
+        </div>
+        <div class="exercise-item">
+          <div class="exercise-q"><div class="exercise-num" style="background:#1B4332">I</div><div><strong>INFORMACIÓN:</strong> Toma uno de esos datos y dale contexto completo</div></div>
+          <textarea class="exercise-input" data-note="ex2" placeholder="Ej: pH = 6.8 en el punto de monitoreo P-3 del río, medido el martes, dentro del rango 6.0-9.0 de la norma X, 0.4 unidades menos que el mismo período del año pasado..."></textarea>
+        </div>
+        <div class="exercise-item">
+          <div class="exercise-q"><div class="exercise-num" style="background:#1565C0">C</div><div><strong>CONOCIMIENTO:</strong> ¿Qué significa ese dato en contexto? ¿A qué problema apunta?</div></div>
+          <textarea class="exercise-input" data-note="ex3" placeholder="Ej: La caída sostenida del pH correlaciona con el aumento de descargas del parque industrial X aguas arriba. Si continúa, en 4 meses cruzará el límite inferior de la norma..."></textarea>
+        </div>
+        <div class="exercise-item">
+          <div class="exercise-q"><div class="exercise-num" style="background:#4A148C">S</div><div><strong>SABIDURÍA:</strong> ¿Qué acción concreta recomiendas? ¿Por qué es la mejor opción?</div></div>
+          <textarea class="exercise-input" data-note="ex4" placeholder="Ej: Solicitar mesa de trabajo con las industrias aguas arriba antes de que el pH supere 6.2. Costo: 2 semanas de gestión. Beneficio: evitar multa de $X y mantener buena relación institucional..."></textarea>
+        </div>
+      </div>
+      <div class="callout callout-tip" style="margin-top:16px">
+        <div class="callout-title"><span class="callout-icon">🔗</span> Conectado al proyecto final (Día 11)</div>
+        <p style="margin:0">El Día 11 aprenderás las "10 preguntas clave antes de crear un indicador". La pirámide DIKW que practicaste hoy es la base de ese ejercicio: un buen indicador debe llevar al usuario al nivel de Conocimiento, no quedarse en Información.</p>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="content-section" data-section="quiz">
+      <div class="section-eyebrow">🧠 Autoevaluación</div>
+      <div class="section-title">Quiz del Día 2</div>
+      <div class="section-divider"></div>
+      <p>5 preguntas sobre la pirámide DIKW y su aplicación en ingeniería ambiental. Retroalimentación inmediata en cada respuesta.</p>
+      <div class="quiz-wrap" id="quiz-container" style="margin-top:24px"></div>
+    </section>
+
+    <!-- COMPLETAR -->
+    <section class="content-section" data-section="complete">
+      <div class="completion-card" id="completion-card">
+        <div class="completion-icon">🌿</div>
+        <div class="completion-title">¡Nivel I avanza!</div>
+        <div class="completion-sub">Mañana: <strong>Los 4 tipos de analítica</strong> — del descriptivo al prescriptivo en proyectos ambientales</div>
+        <div class="completion-actions">
+          <button class="btn btn-white" id="complete-btn" disabled>✓ Marcar Día 2 como completado</button>
+          <a href="index.html" class="btn btn-outline-white">← Volver al índice</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER DE DERECHOS -->
+    <div style="padding:20px 48px;background:var(--forest);color:rgba(255,255,255,0.5);font-size:0.75rem;text-align:center;font-family:var(--font-mono)">
+      © Derechos Reservados · Elida Landaeta — Ingeniero Ambiental y Especialista en Gerencia de Proyectos · 2026 &nbsp;|&nbsp; NEXTPLAY Consulting
+    </div>
+
+    <div class="day-nav">
+      <a href="dia-01.html" class="day-nav-btn">← Día 1: ¿Qué es el BI?</a>
+      <div class="day-nav-info">Día 2 de 52 · Nivel I — Fundamentos de BI</div>
+      <a href="index.html" class="day-nav-btn">Índice del curso →</a>
+    </div>
+
+  </main>
+</div>
+
+<script src="bi-utils.js"></script>
+<script>
+const DAY = 2;
+
+const timer = new SessionTimer(3600);
+initTimerRing('timer-container', timer);
+initTimerRing('timer-container-side', timer);
+timer.start();
+
+function showTier(id, color) {
+  document.querySelectorAll('.tier-detail').forEach(d => d.classList.remove('show'));
+  document.querySelectorAll('.pyramid-tier').forEach(t => t.classList.remove('active'));
+  const detail = document.getElementById(id);
+  if (detail) { detail.classList.add('show'); detail.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initScrollTracking();
+  initNotes(DAY);
+  initCompletion(DAY, null);
+
+  const items = document.querySelectorAll('#checklist li');
+  const progressEl = document.getElementById('checklist-progress');
+  let checked = 0;
+  const update = () => {
+    progressEl.textContent = `${checked} / ${items.length} puntos marcados`;
+    if (checked === items.length) progressEl.style.color = 'var(--limedeep)';
+  };
+  items.forEach(li => {
+    li.addEventListener('click', () => {
+      li.classList.toggle('checked');
+      checked = document.querySelectorAll('#checklist li.checked').length;
+      update();
+    });
+  });
+
+  const questions = [
+    { q: '¿Cuál es la diferencia clave entre "datos" e "información" según la pirámide DIKW?',
+      opts: ['Los datos son más precisos y confiables que la información','La información son datos organizados con contexto — fuente, período, unidad y punto de comparación','Los datos ya tienen interpretación; la información aún no la tiene','No existe diferencia práctica entre los dos para la toma de decisiones ambientales'],
+      correct: 1,
+      explanation: 'La información añade contexto a los datos crudos: una fuente identificada, un período específico, una unidad de medida y una comparación con una referencia (meta, norma, histórico).' },
+    { q: 'El pH = 6.8 medido en el punto P-3 del río Bogotá el 15 de marzo, dentro del rango permisible de la Res. 0631, es un ejemplo de:',
+      opts: ['Dato crudo — porque es una lectura de sensor sin procesar','Información — porque tiene contexto: fuente, lugar, fecha, unidad y comparación con norma','Conocimiento — porque ya tiene interpretación experta','Sabiduría — porque ayuda a tomar una decisión regulatoria'],
+      correct: 1,
+      explanation: 'Este es un ejemplo claro de Información: el dato crudo 6.8 tiene ahora una fuente (punto P-3), una ubicación (río Bogotá), una fecha, y una comparación con el rango normativo de la Res. 0631.' },
+    { q: 'La conclusión "el DBO₅ supera el límite en semanas con lluvia intensa porque hay escorrentía no controlada aguas arriba" es un ejemplo de:',
+      opts: ['Datos — son mediciones del sensor','Información — tiene contexto de fuente y período','Conocimiento — identifica la causa mediante análisis y cruce de variables','Sabiduría — es una decisión de intervención directa'],
+      correct: 2,
+      explanation: 'El Conocimiento requiere cruzar múltiples fuentes de información (datos de DBO₅ + datos de pluviosidad) y aplicar experiencia técnica para identificar la causa. Eso es exactamente lo que hace esta conclusión.' },
+    { q: '¿Cuál es el error más frecuente en el diseño de dashboards ambientales según lo visto hoy?',
+      opts: ['Usar demasiados colores en las visualizaciones','Actualizar los datos con demasiada frecuencia','Quedarse en el nivel de Información — mostrar muchas métricas que no responden ninguna pregunta ni llevan a ninguna acción','No conectar el dashboard con el sistema ERP de la empresa'],
+      correct: 2,
+      explanation: 'El error más frecuente es el "tablero hermoso que nadie usa": lleno de datos e información, pero sin llegar al nivel de Conocimiento que facilite una decisión concreta.' },
+    { q: '¿En qué nivel de la pirámide DIKW es donde principalmente opera la gerente de proyectos ambientales cuando recomienda instalar una trampa de sedimentos antes de la temporada de lluvias para evitar una multa?',
+      opts: ['Datos — está usando mediciones de campo','Información — está usando reportes de calidad del agua','Conocimiento — está identificando la causa del problema','Sabiduría — está tomando una decisión óptima considerando costos, riesgos regulatorios y relaciones institucionales'],
+      correct: 3,
+      explanation: 'La Sabiduría es el nivel más alto: aplica el conocimiento técnico más el contexto regulatorio, económico e institucional para recomendar la mejor acción posible. Eso requiere tanto ingeniería ambiental como gerencia de proyectos.' }
+  ];
+
+  new QuizEngine(questions, 'quiz-container', (score, total) => {
+    unlockCompletion(DAY, score, total);
+    if (score / total >= 0.6) {
+      document.getElementById('complete-btn').disabled = false;
+    }
+  });
+
+  if (BiStorage.isCompleted(DAY)) {
+    document.getElementById('complete-btn').disabled = false;
+    document.getElementById('complete-btn').textContent = '✓ Día completado';
+    document.getElementById('complete-btn').style.background = '#22C55E';
+  }
+});
+</script>
+</body>
+</html>
